@@ -25,7 +25,8 @@ def index():
 @app.route('/catalog', methods=['GET'])
 @app.route('/catalog/categories', methods=['GET'])
 def get_categories():
-    pass
+    categories = db_modules.getCategories()
+    return render_template('categories.html', categories=categories)
 
 
 @app.route('/catalog/categories/new', methods=['POST', 'GET'])
