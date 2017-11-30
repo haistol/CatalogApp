@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from flask import Flask, render_template, make_response, request, redirect, flash
+from flask import Flask, render_template, make_response, request, redirect, flash, jsonify, url_for
 from flask import session as login_session
 from flask import make_response
 import random, string
@@ -31,20 +31,25 @@ def get_categories():
 
 @app.route('/catalog/categories/new', methods=['POST', 'GET'])
 def add_category():
-    if 'username' not in login_session:
+    print(login_session)
+    if 'user_id' not in login_session:
         return redirect('/login')
     if request.method == 'POST':
-        return redirect(url_for('get_category'))
+        
+        data={'name':request.form['name'],
+        'user_id':login_session['user_id']}
+        db_modules.createCategory(data)
+        return redirect(url_for('get_categories'))
     else:
         return render_template('newcategory.html')
 
 
 @app.route('/catalog/categories/<int:category_id>/edit', methods=['POST', 'GET'])
 def edit_category(category_id):
-    if 'username' not in login_session:
+    if 'user_id' not in login_session:
         return redirect('/login')
     if request.method == 'POST':
-        return redirect(url_for('get_category'))
+        return redirect(url_for('get_categories'))
     else:
         return render_template('editcategory.html', category=category_id)
 
@@ -117,7 +122,7 @@ def gconnect():
     url = ("""https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s"""
         % access_token)
     h = httplib2.Http()
-    result = json.loads(h.request(url,'GET')[1])
+    result = json.loads(h.request(url,'GET')[1].decode('utf-8'))
     if result.get('error') is not None:
         response = make_response(json.dumps(result.get('error')),
             50)
