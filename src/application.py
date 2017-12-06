@@ -49,6 +49,9 @@ def edit_category(category_id):
     if 'user_id' not in login_session:
         return redirect('/login')
     if request.method == 'POST':
+        data={'name':request.form['name'],
+        'user_id':login_session['user_id']}
+        db_modules.edit_category(data)
         return redirect(url_for('get_categories'))
     else:
         return render_template('editcategory.html', category=category_id)
@@ -147,6 +150,10 @@ def gconnect():
     stored_credentials = login_session.get('credentials')
     stored_gplus_id = login_session.get('gplus_id')
     if stored_credentials is not None and gplus_id == stored_gplus_id:
+        useid = db_modules.getUserID(data['email'])
+        if useid is not None:
+            login_session['user_id']= useid
+
         response = make_response(
             json.dumps("Current user is already connected"),
             200)
