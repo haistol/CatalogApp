@@ -59,6 +59,8 @@ def edit_category(category_id):
 
 @app.route('/catalog/categories/<int:category_id>/items', methods=['GET'])
 def get_items_by_category(category_id):
+    category=db_modules.getCategory(category_id)
+    items=db_modules.getCategoryItems(category_id)
     return render_template(
                 'newcategoryitem.html',
                 category=category,

@@ -96,7 +96,7 @@ def getCategories():
 
 
 def getCategory(category_id):
-    category= session.query(Category).filter(id=category_id).one()
+    category= session.query(Category).filter_by(id = category_id).one()
     return category
 
 
@@ -111,11 +111,11 @@ def deleteCategory(category):
 
 #Category_item Table Helper Methods
 def getCategoryItems(category_id):
-    return session.query(CategoryItem).fieter(category_id=category_id).all()
+    return session.query(CategoryItem).filter_by(category_id=category_id).all()
 
 
 def getCategoryItem(item_id):
-    return session.query(CategoryItem).filter(id=item_id).one()
+    return session.query(CategoryItem).filter_by(id=item_id).one()
 
 
 def createCategoryItem(data):
