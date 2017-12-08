@@ -1,0 +1,14 @@
+<html>
+	<head>
+		<link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
+	</head>
+	<body>
+		<div class = 'pane'>
+			<h1>{{category.name}}</h1>
+			<a href="{{url_for('add_item_to_category')}}"> <h3> Create a New Item </h3> </a>
+			{% for item in items %}
+				<a href = "{{url_for('get_category_item', category_id = category.id, item_id = item.id)}}"> <p>{{item.name}}</p></a>
+			{% endfor %}
+		</div>
+	</body>
+</html>

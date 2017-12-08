@@ -35,7 +35,6 @@ def add_category():
     if 'user_id' not in login_session:
         return redirect('/login')
     if request.method == 'POST':
-        
         data={'name':request.form['name'],
         'user_id':login_session['user_id']}
         db_modules.createCategory(data)
@@ -79,6 +78,16 @@ def add_item_to_category(category_id):
         return render_template('newcategoryitem.html')
     pass
 
+@app.route(
+    '/catalog/categories/<int:category_id>/<int:item_id>',
+    methods=['GET'])
+def get_category_item(category_id, item_id):
+    item=db_modules.getCategoryItem(item_id)
+    return render_template(
+                'item.html',
+                category_id=category_id,
+                item=item)
+        pass
 
 @app.route(
     '/catalog/categories/<int:category_id>/<int:item_id>/edit',
