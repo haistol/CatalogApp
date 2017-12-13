@@ -5,14 +5,14 @@
 	<body><h1> Edit Category Item </h1>
 		<form action="#" method = 'post'>
 			<p>Name:</p>
-				<input type ='text' size='30' name='name' placeholder = '{{item.name }}'>
+				<input type ='text' size='30' name='name' value = '{{item.name }}'>
 			<p>Description:</p>
-				<input type ='text' size='30' name='description' placeholder = '{{item.description}}'>
+				<input type ='text' size='30' name='description' value = '{{item.description}}'>
 			<p>Price:</p>
-				<input type ='text' size='30' name='price' placeholder = '{{item.price}}'>
+				<input type ='text' size='30' name='price' value = '{{item.price}}'>
 			<input type='submit' value='Edit'>
-			<a href = '#'> Cancel </a>
 		</form>
+		<a href = "{{url_for('get_category_item', category_id = category_id, item_id = item.id)}}"> Cancel </a>
 	</body>
 </html>
 

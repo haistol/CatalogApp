@@ -7,9 +7,8 @@
 			<h1>{{item.name}}</h1>
             <p>{{item.description}}</p>
             <p>{{item.price}}</p>
-			{% for item in items %}
-				<a href = "{{url_for('get_category_item', category_id = category.id, item_id = item.id)}}"> <p>{{item.name}}</p></a>
-			{% endfor %}
+			<a href = "{{url_for('edit_category_item', category_id = category_id, item_id = item.id)}}"> <p>Edit</p></a>
+			<a href = "{{url_for('delete_category_item', category_id = category_id, item_id = item.id)}}"> <p>Edit</p></a>
 		</div>
 	</body>
 </html>

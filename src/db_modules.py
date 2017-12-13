@@ -105,8 +105,22 @@ def createCategory(data):
     return createQuery(newCategory)
 
 
+def editCategory(data):
+    try:
+        editCategory= getCategory(data['id'])
+        editCategory.name= data['name']
+        session.commit()
+        return True
+    except Exception:
+        session.rollback()
+        return False
+
+
 def deleteCategory(category):
-    return deleteRow(category)
+    items= getCategoryItems(category.id)
+    for item in items:
+        session.delete(item)
+    return deleteRowQuery(category)
 
 
 #Category_item Table Helper Methods
@@ -129,22 +143,37 @@ def createCategoryItem(data):
     return createQuery(newCategoryItem)
 
 
+def editCategoryItem(data):
+    try:
+        editItem= getCategoryItem(data['id'])
+        editItem.name= data['name']
+        editItem.description= data['description']
+        editItem.price= data['price']
+        session.commit()
+        return True
+    except Exception:
+        session.rollback()
+        return False
+
+
 def deleteCategoryItem(category_item):
-    return deleteRow(category_item)
+    return deleteRowQuery(category_item)
 
 
+#General Helper Methods
 def createQuery(row):
     try:
         session.add(row)
         session.commit()
         return True
     except Exception:
+        session.rollback()
         return False
 
 
-def deleteQuery(row):
+def deleteRowQuery(row):
     try:
-        session.add(row)
+        session.delete(row)
         session.commit()
         return True
     except Exception:
