@@ -56,6 +56,7 @@ def edit_category(category_id):
     else:
         return render_template('editcategory.html', category=category_id)
 
+
 @app.route('/catalog/categories/<int:category_id>/delete', methods=['POST', 'GET'])
 def delete_category(category_id):
     category= db_modules.getCategory(category_id)
@@ -66,6 +67,7 @@ def delete_category(category_id):
         return redirect(url_for('get_categories'))
     else:
         return render_template('deletecategory.html', category=category)
+
 
 @app.route('/catalog/categories/<int:category_id>/items', methods=['GET'])
 def get_items_by_category(category_id):
@@ -86,7 +88,6 @@ def add_item_to_category(category_id):
     if request.method == 'POST':
         data={'name':request.form['name'],
         'description':request.form['description'],
-        'price':request.form['price'],
         'category_id': category_id,
         'user_id':login_session['user_id']}
         db_modules.createCategoryItem(data)
@@ -117,7 +118,6 @@ def edit_category_item(category_id, item_id):
         data={'id':item_id,
         'name':request.form['name'],
         'description':request.form['description'],
-        'price':request.form['price'],
         'category_id': category_id,
         'user_id':login_session['user_id']}
         db_modules.editCategoryItem(data)
@@ -202,15 +202,14 @@ def gconnect():
     stored_credentials = login_session.get('credentials')
     stored_gplus_id = login_session.get('gplus_id')
     if stored_credentials is not None and gplus_id == stored_gplus_id:
-        useid = db_modules.getUserID(data['email'])
+        useid = db_modules.getUserID(login_session['email'])
         if useid is not None:
             login_session['user_id']= useid
-
-        response = make_response(
-            json.dumps("Current user is already connected"),
-            200)
-        response.headers['Content-Type'] = 'application/json'
-        return response
+            response = make_response(
+                json.dumps("Current user is already connected"),
+                200)
+            response.headers['Content-Type'] = 'application/json'
+            return response
 
     login_session['credentials'] = credentials.access_token
     login_session['gplus_id'] = gplus_id

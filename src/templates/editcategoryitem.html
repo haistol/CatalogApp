@@ -7,9 +7,7 @@
 			<p>Name:</p>
 				<input type ='text' size='30' name='name' value = '{{item.name }}'>
 			<p>Description:</p>
-				<input type ='text' size='30' name='description' value = '{{item.description}}'>
-			<p>Price:</p>
-				<input type ='text' size='30' name='price' value = '{{item.price}}'>
+				<input type ='text' size='500' name='description' value = '{{item.description}}'>
 			<input type='submit' value='Edit'>
 		</form>
 		<a href = "{{url_for('get_category_item', category_id = category_id, item_id = item.id)}}"> Cancel </a>
