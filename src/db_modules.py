@@ -1,7 +1,9 @@
-from sqlalchemy import Column, ForeignKey, Integer, String
+import datetime
+from sqlalchemy import Column, ForeignKey, Integer, String,DateTime ,desc
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy import create_engine 
+
 
 Base = declarative_base()
 
@@ -17,6 +19,7 @@ class User(Base):
     name = Column(String(250), nullable=False)
     email = Column(String(250), nullable=False)
     picture = Column(String(250))
+    created_date = Column(DateTime, default=datetime.datetime.utcnow)
 
     @property
     def serialize(self):
@@ -33,6 +36,7 @@ class Category(Base):
 
     id = Column(Integer, primary_key=True,nullable=False)
     name = Column(String(250),unique=True)
+    created_date = Column(DateTime, default=datetime.datetime.utcnow)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
 
@@ -53,6 +57,7 @@ class CategoryItem(Base):
     description = Column(String(500))
     category_id = Column(Integer, ForeignKey('category.id'))
     category = relationship(Category)
+    created_date = Column(DateTime, default=datetime.datetime.utcnow)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
 
@@ -128,6 +133,9 @@ def getCategoryItems(category_id):
 
 def getCategoryItem(item_id):
     return session.query(CategoryItem).filter_by(id=item_id).one()
+
+def getLatest10Items():
+    return session.query(CategoryItem).order_by(desc(CategoryItem.created_date)).limit(10).all()
 
 
 def createCategoryItem(data):
