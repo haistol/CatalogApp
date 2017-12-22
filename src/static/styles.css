@@ -1,7 +1,7 @@
 
-.container { display: flex; flex-wrap: wrap; height: 100%;}
-.menu {width: 100px;}
-.main {width: 200px;}
+.container { display: flex; flex-wrap: wrap; height: 100%; flex-direction: row;}
+.menu { width: 30%;}
+.main { min-width: 70%;}
 
 
 

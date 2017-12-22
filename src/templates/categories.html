@@ -9,10 +9,8 @@
 				<a href="{{url_for('add_category')}}" > <h3> Create a New Category </h3> </a>
 				{% for category in categories %}
 					<a href = "{{url_for('get_items_by_category', category_id = category.id)}}"> <p>{{category.name}}</p></a>
-					<p><a href = "{{url_for('edit_category',category_id = category.id)}}">Edit Category</a></p>
 				{% endfor %}
 			</div>
-
 			<div class = 'main'> 
 				<h1>Lastest Item Added </h1>
 				{% for item in items %}

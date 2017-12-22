@@ -3,13 +3,24 @@
 		<link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
 	</head>
 	<body>
-		<h1>New Category Item</h1>
-		<form action="#" method = 'post'>
-			<p>Name:</p>
-				<input type ='text' size='30' name='name'>
-			<p>Description:</p>
-				<input type ='text' size='500' name='description'>
-			<input type='submit' value='Create'>
-		</form>
+		<div class = 'container'>
+			<div class = 'menu'> 
+				<h1>Categories</h1>
+				<a href="{{url_for('add_category')}}" > <h3> Create a New Category </h3> </a>
+				{% for category in categories %}
+					<a href = "{{url_for('get_items_by_category', category_id = category.id)}}"> <p>{{category.name}}</p></a>
+				{% endfor %}
+			</div>
+			<div class='main'>
+				<h1>New Category Item</h1>
+				<form action="#" method = 'post'>
+					<p>Name:</p>
+						<input type ='text' size='30' name='name'>
+					<p>Description:</p>
+						<input type ='text' size='500' name='description'>
+					<input type='submit' value='Create'>
+				</form>
+			</div>
+		</div>
 	</body>
 </html>
