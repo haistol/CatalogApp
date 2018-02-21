@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!--LOAD PRE-REQUISITES FOR GOOGLE SIGN IN -->
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+        <script src="//apis.google.com/js/platform.js?onload=start"> </script>
+        <!-- END PRE-REQUISITES FOR GOOGLE SIGN IN -->
+        <link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
+        <title>Catalog</title>
+    </head>
+    <body>
+        <header id='header' class='container'>
+            <section id='page-title'>
+                <hi id="main-title">Catalog App</hi>
+            </section>
+            <section id='account'>
+                {% if user.user_id is defined %}
+                    <p id="user-name">{{user.name}}</hi>
+                    <button id='logout' onclick="location.href='{{url_for('gdisconnect') }}'">Logout</button>
+                {% else %}
+                    <div id="signinButton">
+                        <span class="g-signin"
+                          data-scope="openid email"
+                          data-clientid="435590521921-1tl5fe0joidpjh71er58v0d0snmid2f5.apps.googleusercontent.com"
+                          data-redirecturi="postmessage"
+                          data-accesstype="offline"
+                          data-cookiepolicy="single_host_origin"
+                          data-callback="signInCallback"
+                          data-approvalprompt="force">
+                        </span>
+                      </div>
+                {% endif%}
+            </section>
+        </header>
+        {% block body %} {% endblock %}
+    </body>
+    <script>
+        function signInCallback(authResult) {
+        if (authResult['code']) {
+            // Hide the sign-in button now that the user is authorized
+            $('#signinButton').attr('style', 'display: none');
+            // Send the one-time-use code to the server, if the server responds, write a 'login successful' message to the web page and then redirect back to the main restaurants page
+            $.ajax({
+            type: 'POST',
+            url: '/gconnect?state={{user.state}}',
+            processData: false,
+            data: authResult['code'],
+            contentType: 'application/octet-stream; charset=utf-8',
+            success: function(result) {
+                // Handle or verify the server response if necessary.
+                if (result) {
+                window.location.href = "/catalog";
+                } else if (authResult['error']) {
+            console.log('There was an error: ' + authResult['error']);
+        } else {
+                alert('Failed to make a server-side call. Check your configuration and console.');
+                }
+            }
+        }); 
+        } }
+    </script>
+</html>

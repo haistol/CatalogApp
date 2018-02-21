@@ -1,22 +1,25 @@
-<html>
-	<head>
-		<link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
-	</head>
-	<body>
+{% extends "base.html" %}
+{% block body %}
 		<div class = 'container'>
-			<div class = 'menu'> 
-				<h1>Categories</h1>
-				<a href="{{url_for('add_category')}}" > <h3> Create a New Category </h3> </a>
-				{% for category in categories %}
-					<a href = "{{url_for('get_items_by_category', category_id = category.id)}}"> <p>{{category.name}}</p></a>
-				{% endfor %}
-			</div>
-			<div class = 'main'> 
-				<h1>Lastest Item Added </h1>
-				{% for item in items %}
-					<a href = "{{url_for('get_category_item', category_id = item.category.id, item_id = item.id)}}"> <p>{{item.name}} ({{item.category.name}})</p></a>
-				{% endfor %}
-			</div>
+			<section class = 'menu'> 
+				<h2>Categories</h2>
+				<ul>
+					{% for category in categories %}
+						<li>
+							<a href = "{{url_for('get_items_by_category', category_name = category.name)}}"> <p>{{category.name}}</p></a>
+						</li>
+					{% endfor %}
+				</ul>
+			</section>
+			<section class = 'main'> 
+				<h2>Lastest Item Added </h2>
+				<ul>
+					{% for item in items %}
+						<li>
+							<a href = "{{url_for('get_category_item', category_name = item.category.name, item_name = item.name)}}"> <p>{{item.name}} ({{item.category.name}})</p></a>
+						</li>
+					{% endfor %}
+				</ul>
+			</section>
 		</div>
-	</body>
-</html>
+{% endblock %}
