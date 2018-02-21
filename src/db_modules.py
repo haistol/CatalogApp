@@ -4,7 +4,6 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy import create_engine 
 
-
 Base = declarative_base()
 
 engine = create_engine('postgresql://webadmin:admin2017@localhost/catalog')
@@ -19,8 +18,11 @@ class User(Base):
     name = Column(String(250), nullable=False)
     email = Column(String(250), nullable=False)
     picture = Column(String(250))
-    created_date = Column(DateTime, default=datetime.datetime.utcnow)
-
+    created_timestamp = Column(DateTime, default=datetime.datetime.utcnow)
+    modified_timestamp = Column(
+        DateTime,
+        default=datetime.datetime.utcnow,
+        onupdate=datetime.datetime.utcnow)
     @property
     def serialize(self):
         return {
@@ -36,16 +38,17 @@ class Category(Base):
 
     id = Column(Integer, primary_key=True,nullable=False)
     name = Column(String(250),unique=True)
-    created_date = Column(DateTime, default=datetime.datetime.utcnow)
-    user_id = Column(Integer, ForeignKey('user.id'))
-    user = relationship(User)
-
+    created_timestamp = Column(DateTime, default=datetime.datetime.utcnow)
+    modified_timestamp = Column(
+        DateTime,
+        default=datetime.datetime.utcnow,
+        onupdate=datetime.datetime.utcnow)
     @property
     def serialize(self):
         """Return object data in easily serializeable format"""
         return {
-            'name': self.name,
             'id': self.id,
+            'name': self.name,
         }
 
 
@@ -57,7 +60,11 @@ class CategoryItem(Base):
     description = Column(String(500))
     category_id = Column(Integer, ForeignKey('category.id'))
     category = relationship(Category)
-    created_date = Column(DateTime, default=datetime.datetime.utcnow)
+    created_timestamp = Column(DateTime, default=datetime.datetime.utcnow)
+    modified_timestamp = Column(
+        DateTime,
+        default=datetime.datetime.utcnow,
+        onupdate=datetime.datetime.utcnow)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
 
@@ -65,6 +72,7 @@ class CategoryItem(Base):
     def serialize(self):
         """Return object data in easily serializeable format"""
         return {
+            "category_id":self.category_id,
             'name': self.name,
             'description': self.description,
             'id': self.id,
@@ -98,17 +106,17 @@ def getCategories():
     return categories
 
 
-def getCategory(category_id):
-    category= session.query(Category).filter_by(id = category_id).one()
+''' def getCategory(category_name):
+    category= session.query(Category).filter_by(name = category_name).one()
     return category
-
+ '''
 
 def createCategory(data):
-    newCategory= Category(name= data['name'], user_id= data['user_id'])
+    newCategory= Category(name= data['name'])
     return createQuery(newCategory)
 
 
-def editCategory(data):
+''' def editCategory(data):
     try:
         editCategory= getCategory(data['id'])
         editCategory.name= data['name']
@@ -117,25 +125,25 @@ def editCategory(data):
     except Exception:
         session.rollback()
         return False
+ '''
 
-
-def deleteCategory(category):
+''' def deleteCategory(category):
     items= getCategoryItems(category.id)
     for item in items:
         session.delete(item)
     return deleteRowQuery(category)
-
+ '''
 
 #Category_item Table Helper Methods
 def getCategoryItems(category_id):
     return session.query(CategoryItem).filter_by(category_id=category_id).all()
 
 
-def getCategoryItem(item_id):
-    return session.query(CategoryItem).filter_by(id=item_id).one()
+def getCategoryItem(category_id,item_name):
+    return session.query(CategoryItem).filter_by(name=item_name).filter_by(category_id=category_id).one()
 
 def getLatest10Items():
-    return session.query(CategoryItem).order_by(desc(CategoryItem.created_date)).limit(10).all()
+    return session.query(CategoryItem).order_by(desc(CategoryItem.created_timestamp)).limit(10).all()
 
 
 def createCategoryItem(data):
@@ -148,11 +156,8 @@ def createCategoryItem(data):
     return createQuery(newCategoryItem)
 
 
-def editCategoryItem(data):
+def editCategoryItem():
     try:
-        editItem= getCategoryItem(data['id'])
-        editItem.name= data['name']
-        editItem.description= data['description']
         session.commit()
         return True
     except Exception:
