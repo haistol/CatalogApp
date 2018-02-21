@@ -25,125 +25,97 @@ def index():
 @app.route('/catalog', methods=['GET'])
 @app.route('/catalog/categories', methods=['GET'])
 def get_categories():
+    if(not login_session['state']):
+        state = ''.join(random.choice(string.ascii_uppercase + string.
+            digits) for x in range(32))
+        login_session['state'] = state
     categories = db_modules.getCategories()
     items=db_modules.getLatest10Items()
-    return render_template('categories.html', categories=categories,items=items)
+    return render_template('categories.html', categories=categories,items=items,user=login_session)
 
-
-@app.route('/catalog/categories/new', methods=['POST', 'GET'])
-def add_category():
-    print(login_session)
-    if 'user_id' not in login_session:
-        return redirect('/login')
-    if request.method == 'POST':
-        data={'name':request.form['name'],
-        'user_id':login_session['user_id']}
-        db_modules.createCategory(data)
-        return redirect(url_for('get_categories'))
-    else:
-        return render_template('newcategory.html')
-
-
-@app.route('/catalog/categories/<int:category_id>/edit', methods=['POST', 'GET'])
-def edit_category(category_id):
-    if 'user_id' not in login_session:
-        return redirect('/login')
-    if request.method == 'POST':
-        data={'id':category_id,
-        'name':request.form['name'],
-        'user_id':login_session['user_id']}
-        db_modules.editCategory(data)
-        return redirect(url_for('get_categories'))
-    else:
-        return render_template('editcategory.html', category=category_id)
-
-
-@app.route('/catalog/categories/<int:category_id>/delete', methods=['POST', 'GET'])
-def delete_category(category_id):
-    category= db_modules.getCategory(category_id)
-    if 'user_id' not in login_session:
-        return redirect('/login')
-    if request.method == 'POST':
-        db_modules.deleteCategory(category)
-        return redirect(url_for('get_categories'))
-    else:
-        return render_template('deletecategory.html', category=category)
-
-
-@app.route('/catalog/categories/<int:category_id>/items', methods=['GET'])
-def get_items_by_category(category_id):
-    category=db_modules.getCategory(category_id)
-    items=db_modules.getCategoryItems(category_id)
+@app.route('/catalog/categories/<string:category_name>', methods=['GET'])
+def get_items_by_category(category_name):
+    categories = db_modules.getCategories()
+    category=getCategory(categories, category_name)
+    items=db_modules.getCategoryItems(category.id)
     return render_template(
                 'categoryitems.html',
+                categories=categories,
                 category=category,
-                items=items)
-
+                items=items,
+                user=login_session)
 
 @app.route(
-    '/catalog/categories/<int:category_id>/items/new',
+    '/catalog/categories/<string:category_name>/<string:item_name>',
+    methods=['GET'])
+def get_category_item(category_name, item_name):
+    categories = db_modules.getCategories()
+    category=getCategory(categories, category_name)
+    item=db_modules.getCategoryItem(category.id,item_name)
+    return render_template(
+                'item.html',
+                category=category,
+                item=item,
+                user=login_session)
+
+@app.route(
+    '/catalog/categories/<string:category_name>/items/new',
     methods=['POST', 'GET'])
-def add_item_to_category(category_id):
+def add_item_to_category(category_name):
     if 'user_id' not in login_session:
-        return redirect('/login')
+        return redirect('/catalog')
+    categories = db_modules.getCategories()
+    category=getCategory(categories, category_name)
     if request.method == 'POST':
         data={'name':request.form['name'],
         'description':request.form['description'],
-        'category_id': category_id,
+        'category_id': category.id,
         'user_id':login_session['user_id']}
         db_modules.createCategoryItem(data)
-        return redirect(url_for('get_items_by_category',category_id=category_id))
+        return redirect(url_for('get_items_by_category',category_name=category_name))
     else:
-        return render_template('newcategoryitem.html')
+        return render_template('newcategoryitem.html',category=category,user=login_session)
     
 
 @app.route(
-    '/catalog/categories/<int:category_id>/<int:item_id>',
-    methods=['GET'])
-def get_category_item(category_id, item_id):
-    item=db_modules.getCategoryItem(item_id)
-    return render_template(
-                'item.html',
-                category_id=category_id,
-                item=item)
-        
-
-@app.route(
-    '/catalog/categories/<int:category_id>/<int:item_id>/edit',
+    '/catalog/categories/<string:category_name>/<string:item_name>/edit',
     methods=['POST', 'GET'])
-def edit_category_item(category_id, item_id):
-    item=db_modules.getCategoryItem(item_id)
+def edit_category_item(category_name, item_name):
     if 'user_id' not in login_session:
-        return redirect('/login')
+        return redirect('/catalog')
+    categories = db_modules.getCategories()
+    category=getCategory(categories, category_name)
+    item=db_modules.getCategoryItem(category.id,item_name)
     if request.method == 'POST':
-        data={'id':item_id,
-        'name':request.form['name'],
-        'description':request.form['description'],
-        'category_id': category_id,
-        'user_id':login_session['user_id']}
-        db_modules.editCategoryItem(data)
-        return redirect(url_for('get_category_item', category_id=category_id, item_id=item_id))
+        item.name=request.form['name']
+        item.description=request.form['description']
+        db_modules.editCategoryItem()
+        return redirect(url_for('get_category_item', category_name=category_name, item_name=request.form['name']))
     else:
         return render_template(
                     'editcategoryitem.html',
-                    category_id=category_id,
-                    item=item)
+                    category=category,
+                    item=item,
+                    user=login_session)
     
 @app.route(
-    '/catalog/categories/<int:category_id>/<int:item_id>/delete',
+    '/catalog/categories/<string:category_name>/<string:item_name>/delete',
     methods=['POST', 'GET'])
-def delete_category_item(category_id, item_id):
-    item=db_modules.getCategoryItem(item_id)
+def delete_category_item(category_name, item_name):
     if 'user_id' not in login_session:
-        return redirect('/login')
+        return redirect('/catalog')
+    categories = db_modules.getCategories()
+    category=getCategory(categories, category_name)
+    item=db_modules.getCategoryItem(category.id,item_name)
     if request.method == 'POST':
         db_modules.deleteCategoryItem(item)
-        return redirect(url_for('get_items_by_category', category_id=category_id))
+        return redirect(url_for('get_items_by_category',category_name=category_name))
     else:
         return render_template(
                     'deletecategoryitem.html',
-                    category_id=category_id,
-                    item=item)
+                    category=category,
+                    item=item,
+                    user=login_session)
     
 
 @app.route('/login', methods=['GET'])
@@ -273,7 +245,11 @@ def gdisconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
 
-
+def getCategory(categories, category_name):
+    for category in categories:
+        if category.name == category_name:
+            return category
+    return None
 
 if __name__ == "__main__":
     app.debug = True
