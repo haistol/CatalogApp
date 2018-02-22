@@ -21,11 +21,10 @@ app.secret_key = "3QMRGOWGA04EG5NSJR0LS1DYJRSQA44G"
 def index():
     return "welcome"
 
-
 @app.route('/catalog', methods=['GET'])
 @app.route('/catalog/categories', methods=['GET'])
 def get_categories():
-    if(not login_session['state']):
+    if(not 'statet' in login_session):
         state = ''.join(random.choice(string.ascii_uppercase + string.
             digits) for x in range(32))
         login_session['state'] = state
@@ -89,7 +88,7 @@ def edit_category_item(category_name, item_name):
     if request.method == 'POST':
         item.name=request.form['name']
         item.description=request.form['description']
-        db_modules.editCategoryItem()
+        db_modules.commitUpdate()
         return redirect(url_for('get_category_item', category_name=category_name, item_name=request.form['name']))
     else:
         return render_template(
@@ -118,17 +117,9 @@ def delete_category_item(category_name, item_name):
                     user=login_session)
     
 
-@app.route('/login', methods=['GET'])
-def user_login():
-    state = ''.join(random.choice(string.ascii_uppercase + string.
-        digits) for x in range(32))
-    login_session['state'] = state
-    return render_template('login.html',STATE=state)
-
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
     if request.args.get('state') != login_session['state']:
-        print("pase")
         response = make_response(json.dumps('Invalid state parameter'),
         401)
         response.headers['Content-Type'] = 'application/json'
@@ -183,7 +174,6 @@ def gconnect():
                 200)
             response.headers['Content-Type'] = 'application/json'
             return response
-
     login_session['credentials'] = credentials.access_token
     login_session['gplus_id'] = gplus_id
 
@@ -192,7 +182,6 @@ def gconnect():
         'alt':'json'}
     answer = requests.get(userinfo_url,params = params)
     data = json.loads(answer.text)
-
     login_session['username'] = data['name']
     login_session['picture'] = data['picture']
     login_session['email'] = data['email']
@@ -203,7 +192,6 @@ def gconnect():
     else:
         login_session['user_id']= db_modules.createUser(login_session)
         
-
     output = ''
     output += '<h1>Welcome, '
     output += login_session['username']
@@ -212,7 +200,6 @@ def gconnect():
     output += login_session['picture']
     output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
     flash("you are now logged in as %s" % login_session['username'])
-    print("done!")
     return output
 
 @app.route('/gdisconnect')
@@ -222,7 +209,7 @@ def gdisconnect():
         print('Access Token is None')
         response = make_response(json.dumps('Current user not connected.'), 401)
         response.headers['Content-Type'] = 'application/json'
-        return response
+        return redirect('/catalog')
     print ('In gdisconnect access token is %s', access_token)
     print ('User name is: ')
     print (login_session['username'])
@@ -237,9 +224,10 @@ def gdisconnect():
         del login_session['username']
         del login_session['email']
         del login_session['picture']
+        del login_session['user_id']
         response = make_response(json.dumps('Successfully disconnected.'), 200)
         response.headers['Content-Type'] = 'application/json'
-        return response
+        return redirect('/catalog')
     else:
         response = make_response(json.dumps('Failed to revoke token for given user.', 400))
         response.headers['Content-Type'] = 'application/json'
