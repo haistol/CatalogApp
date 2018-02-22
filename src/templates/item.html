@@ -1,13 +1,14 @@
 {% extends "base.html" %}
 {% block body %}
-		<div class = 'pane'>
-			<section>
-				<h2>{{item.name}}</h2>
-				<p>{{item.description}}</p>
+			<section class="pane">
+				<h1 id="item-name">{{item.name}}</h1>
+				<h2>description</h2>
+				<p id="itme-desc">{{item.description}}</p>
 				{% if user.user_id == item.user_id %}
-					<a href = "{{url_for('edit_category_item', category_name = category.name, item_name = item.name)}}"> <p>Edit</p></a>
-					<a href = "{{url_for('delete_category_item', category_name = category.name, item_name = item.name)}}"> <p>Delete</p></a>
+					<section class="container">
+						<a href = "{{url_for('edit_category_item', category_name = category.name, item_name = item.name)}}"> <p>Edit</p></a>
+						<p>  /  </p>
+						<a href = "{{url_for('delete_category_item', category_name = category.name, item_name = item.name)}}"> <p>Delete</p></a>
+					</section>
 				{% endif %}
-			</section>
-		</div>
 {% endblock %}
