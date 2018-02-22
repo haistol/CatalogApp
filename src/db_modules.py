@@ -140,7 +140,10 @@ def getCategoryItems(category_id):
 
 
 def getCategoryItem(category_id,item_name):
-    return session.query(CategoryItem).filter_by(name=item_name).filter_by(category_id=category_id).one()
+    try:
+        return session.query(CategoryItem).filter_by(name=item_name).filter_by(category_id=category_id).one()
+    except Exception:
+        return None
 
 def getLatest10Items():
     return session.query(CategoryItem).order_by(desc(CategoryItem.created_timestamp)).limit(10).all()
@@ -156,7 +159,12 @@ def createCategoryItem(data):
     return createQuery(newCategoryItem)
 
 
-def editCategoryItem():
+def deleteCategoryItem(category_item):
+    return deleteRowQuery(category_item)
+
+
+#General Helper Methods
+def commitUpdate():
     try:
         session.commit()
         return True
@@ -164,20 +172,13 @@ def editCategoryItem():
         session.rollback()
         return False
 
-
-def deleteCategoryItem(category_item):
-    return deleteRowQuery(category_item)
-
-
-#General Helper Methods
 def createQuery(row):
     try:
         session.add(row)
         session.commit()
         return True
     except Exception:
-        print("error")
-        #session.rollback()
+        session.rollback()
         return False
 
 
