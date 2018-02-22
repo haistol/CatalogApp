@@ -2,16 +2,29 @@
 .container {
     display: flex;
     flex-wrap: wrap;
-    height: 100%;
+
     flex-direction: row;
 }
+#header {
+    background: #a1a1a1;
+    height: 100px;
+    justify-content: space-around;
+    align-items: center;
+}
 
+#main-title {
+    color: #fff;
+    font-family: 'Krona One', sans-serif;
+    font-size: 60px;
+}
 .menu {
-    width: 30%;
+    width: 20%;
+    background: #f0f0f0;
 }
 
 .main {
-    min-width: 70%;
+    margin-left: 2%;
+    min-width: 78%;
 }
 #logout {
     width: 100px;
@@ -24,10 +37,54 @@
     border: 1px solid #3366cc;
     border-radius: 10px;
   
-    }
+}
 
-    #logout:hover {
+#logout:hover {
     color: #ffff00;
     background: #000;
     border: 1px solid #fff;
-    }
+}
+
+ul {
+    list-style-type: none;
+}
+.category-list {
+
+    margin: 0;
+    padding: 0;
+}
+
+.category-name {
+    font: 200 20px/1.5 Helvetica, Verdana, sans-serif;
+}
+
+a {
+    text-decoration: none;
+}
+.category-link {
+
+    color: #000;
+    display: block;
+    width: 100%;
+
+}
+
+.category-link:hover {
+    background: #38b1e9;
+}
+.pane {
+    flex-direction: column;
+    position:absolute;
+    min-width: 80%;
+    left: 10%;
+    border: 1px solid;
+    border-radius: 25px;
+    padding: 10px;
+    margin:2px;
+    border-color: #999999;
+    background-color: #e2d5b7;
+    align-items: center;
+}
+#item-name {
+    font-size: 30px;
+}
