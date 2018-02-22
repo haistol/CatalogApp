@@ -14,9 +14,9 @@
                 <hi id="main-title">Catalog App</hi>
             </section>
             <section id='account'>
-                {% if user.user_id is defined %}
-                    <p id="user-name">{{user.name}}</hi>
-                    <button id='logout' onclick="location.href='{{url_for('gdisconnect') }}'">Logout</button>
+                {% if user.gplus_id is defined %}
+                    <p id="user-email">{{user.email}}</hi>
+                    <button id='logout' onclick="window.location.href='{{ url_for('gdisconnect') }}'">Logout</button>
                 {% else %}
                     <div id="signinButton">
                         <span class="g-signin"
