@@ -3,10 +3,10 @@
 		<div class = 'container'>
 			<section class = 'menu'> 
 				<h2>Categories</h2>
-				<ul>
+				<ul class="category-list">
 					{% for category in categories %}
-						<li>
-							<a href = "{{url_for('get_items_by_category', category_name = category.name)}}"> <p>{{category.name}}</p></a>
+						<li class="category-name">
+							<a class="category-link" href = "{{url_for('get_items_by_category', category_name = category.name)}}"> <p>{{category.name}}</p></a>
 						</li>
 					{% endfor %}
 				</ul>
