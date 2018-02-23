@@ -229,9 +229,15 @@ def gdisconnect():
         response.headers['Content-Type'] = 'application/json'
         return redirect('/catalog')
     else:
+        del login_session['credentials']
+        del login_session['gplus_id']
+        del login_session['username']
+        del login_session['email']
+        del login_session['picture']
+        del login_session['user_id']
         response = make_response(json.dumps('Failed to revoke token for given user.', 400))
         response.headers['Content-Type'] = 'application/json'
-        return response
+        return redirect('/catalog')
 
 def getCategory(categories, category_name):
     for category in categories:
