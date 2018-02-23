@@ -6,9 +6,9 @@
 				<p id="itme-desc">{{item.description}}</p>
 				{% if user.user_id == item.user_id %}
 					<section class="container">
-						<a href = "{{url_for('edit_category_item', category_name = category.name, item_name = item.name)}}"> <p>Edit</p></a>
-						<p>  /  </p>
-						<a href = "{{url_for('delete_category_item', category_name = category.name, item_name = item.name)}}"> <p>Delete</p></a>
+						<a href = "{{url_for('edit_category_item', category_name = category.name, item_name = item.name)}}"> <button>Edit</button></a>
+
+						<a href = "{{url_for('delete_category_item', category_name = category.name, item_name = item.name)}}"> <button>Delete</button></a>
 					</section>
 				{% endif %}
 {% endblock %}

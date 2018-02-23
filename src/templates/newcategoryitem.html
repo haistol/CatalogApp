@@ -1,16 +1,16 @@
 {% extends "base.html" %}
 {% block body %}
 		<div class = 'container'>
-			<section class='main'>
+			<section class='pane'>
 				<h2>New {{category.name}} Item</h2>
 				<form action="#" method = 'post'>
 					<p>Name:</p>
 						<input type ='text' size='30' name='name'>
 					<p>Description:</p>
-						<input type ='text' size='500' name='description'>
+						<input class="description" type ='text'  name='description'>
 					<input type='submit' value='Create'>
+					<a href = "{{url_for('get_items_by_category', category_name = category.name)}}"> <button>Cancel</button></a>
 				</form>
-				<a href = "{{url_for('get_items_by_category', category_name = category.name)}}"> Cancel</a>
 			</section>
 		</div>
 {% endblock %}
