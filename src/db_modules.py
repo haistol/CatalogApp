@@ -106,10 +106,10 @@ def getCategories():
     return categories
 
 
-''' def getCategory(category_name):
+def getCategoryByName(category_name):
     category= session.query(Category).filter_by(name = category_name).one()
     return category
- '''
+
 
 def createCategory(data):
     newCategory= Category(name= data['name'])

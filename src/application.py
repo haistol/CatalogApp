@@ -19,11 +19,14 @@ app.secret_key = "3QMRGOWGA04EG5NSJR0LS1DYJRSQA44G"
 
 @app.route('/', methods=['GET'])
 def index():
-    return "welcome"
+    return redirect('/catalog')
+    #return "welcome"
 
 @app.route('/catalog', methods=['GET'])
-@app.route('/catalog/categories', methods=['GET'])
 def get_categories():
+    """ View for the catalog endpoint.
+        Return the category.html template filed with
+        the catolog data"""
     if(not 'statet' in login_session):
         state = ''.join(random.choice(string.ascii_uppercase + string.
             digits) for x in range(32))
@@ -32,8 +35,11 @@ def get_categories():
     items=db_modules.getLatest10Items()
     return render_template('categories.html', categories=categories,items=items,user=login_session)
 
-@app.route('/catalog/categories/<string:category_name>', methods=['GET'])
+@app.route('/catalog/<string:category_name>', methods=['GET'])
 def get_items_by_category(category_name):
+    """ View for the catalog/<category_name> endpoint.
+        Return the categoryitems.html template filed with
+        the catolog data for an arbitrary category"""
     categories = db_modules.getCategories()
     category=getCategory(categories, category_name)
     items=db_modules.getCategoryItems(category.id)
@@ -45,9 +51,12 @@ def get_items_by_category(category_name):
                 user=login_session)
 
 @app.route(
-    '/catalog/categories/<string:category_name>/<string:item_name>',
+    '/catalog/<string:category_name>/<string:item_name>',
     methods=['GET'])
 def get_category_item(category_name, item_name):
+    """ View for the catalog/<category_name>/<item_name> endpoint.
+        Return the item.html template filed with
+        the catolog data for an arbitrary item"""
     categories = db_modules.getCategories()
     category=getCategory(categories, category_name)
     item=db_modules.getCategoryItem(category.id,item_name)
@@ -58,9 +67,15 @@ def get_category_item(category_name, item_name):
                 user=login_session)
 
 @app.route(
-    '/catalog/categories/<string:category_name>/items/new',
+    '/catalog/<string:category_name>/items/new',
     methods=['POST', 'GET'])
 def add_item_to_category(category_name):
+    """ View for the catalog/<category_name>/items/new endpoint.
+        GET: Return the newcategoryitem.html template with
+        form to add a new item to the category
+        POST: Save the new item data and redirect to 
+        /catalog/<category_name> endpoint"""
+
     if 'user_id' not in login_session:
         return redirect('/catalog')
     categories = db_modules.getCategories()
@@ -77,9 +92,14 @@ def add_item_to_category(category_name):
     
 
 @app.route(
-    '/catalog/categories/<string:category_name>/<string:item_name>/edit',
+    '/catalog/<string:category_name>/<string:item_name>/edit',
     methods=['POST', 'GET'])
 def edit_category_item(category_name, item_name):
+    """ View for the catalog/<category_name>/<item_name>/edit endpoint.
+        GET: Return the editcategoryitem.html template with
+        form to edit a an arbitrary item
+        POST: update the item data and redirect to 
+        /catalog/<category_name>/item_name> endpoint"""
     if 'user_id' not in login_session:
         return redirect('/catalog')
     categories = db_modules.getCategories()
@@ -101,6 +121,11 @@ def edit_category_item(category_name, item_name):
     '/catalog/categories/<string:category_name>/<string:item_name>/delete',
     methods=['POST', 'GET'])
 def delete_category_item(category_name, item_name):
+    """ View for the catalog/<category_name>/<item_name>/delete endpoint.
+        GET: Return the deletecategoryitem.html template 
+        with the confirmation to delete a an arbitrary item
+        POST: delete the item data and redirect to 
+        /catalog/<category_name> endpoint"""
     if 'user_id' not in login_session:
         return redirect('/catalog')
     categories = db_modules.getCategories()
@@ -119,6 +144,7 @@ def delete_category_item(category_name, item_name):
 
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
+    """ Process the Google Oauth2 authorization sing in"""
     if request.args.get('state') != login_session['state']:
         response = make_response(json.dumps('Invalid state parameter'),
         401)
@@ -204,6 +230,7 @@ def gconnect():
 
 @app.route('/gdisconnect')
 def gdisconnect():
+    """ Process the Google Oauth2 authorization sing out"""
     access_token = login_session.get('credentials')
     if access_token is None:
         print('Access Token is None')
@@ -239,7 +266,45 @@ def gdisconnect():
         response.headers['Content-Type'] = 'application/json'
         return redirect('/catalog')
 
+
+"""
+///////////////////////////////////////////////
+////////////      API         /////////////////
+//////////////////////////////////////////////
+"""
+
+@app.route('/api/get_item/<string:category_name>/<string:item_name>', methods=['GET'])
+def get_item_api(category_name, item_name):
+    """ Return the information of a arbitrary Item in JSON format"""
+    category=db_modules.getCategoryByName(category_name)
+    item=db_modules.getCategoryItem(category.id,item_name)
+    return jsonify(item=item.serialize)
+
+@app.route('/api/get_category/<string:category_name>', methods=['GET'])
+def get_category_api(category_name):
+    """ Return the information of a arbitrary Category in JSON format"""
+    category=db_modules.getCategoryByName(category_name)
+    items=db_modules.getCategoryItems(category.id)
+    response=category.serialize
+    response["items"]  = [item.serialize for item in items]
+    return jsonify(category=response)
+
+@app.route('/api/catalog', methods=['GET'])
+def get_categories_api():
+    """ Return the Catalog information in JSON format"""
+    categories = db_modules.getCategories()
+    response=[]
+    for category in categories:
+        items=db_modules.getCategoryItems(category.id)
+        result=category.serialize
+        result["items"]  = [item.serialize for item in items]
+        response.append(result)
+    return jsonify(categories=response)
+
+
 def getCategory(categories, category_name):
+    """ Return a category object if the name macht
+     any in the list categories"""
     for category in categories:
         if category.name == category_name:
             return category
