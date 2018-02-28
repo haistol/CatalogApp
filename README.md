@@ -23,20 +23,20 @@ Modern web applications perform a variety of functions and provide amazing featu
     * Go to repo directory location on your machine.
     * With a text editor open the file `db_modules.py`
     * Modify the line 8 with your user credentials: `engine = create_engine('postgresql://USERNAME:PASSWORD@localhost/catalog')`
-9. Initialize the databe `catalog`
+9. Initialize the database `catalog`
     * Open a command line terminal.
     * On that terminal go to repo directory location on your machine.
     * On that terminal run: `python created_database.py` or `python3 created_database.py`
-    * Note.: the `created_database.py` script will create a predeterment list of categories feel free of edit the names in that list to meet your needs.
+    * Note.: the `created_database.py` script will create a default list of categories feel free of edit the names in that list to meet your needs.
 10. Get a Google Oauth2 API credentials
     * https://developers.google.com/identity/protocols/OAuth2
     * create a new credential for the app
-11. In the credetial setting 
+11. In the credential setting 
     * add point of origin: `http://localhost:8881`
     * add redirection URI: `http://localhost:8881/gconnect`
     * If you are planing to change the port for the app you need to change the port in these URIs
 12. Add your Google Oauth2 API credentials to the app
-    * Download the JSON from the credetial settings page.
+    * Download the JSON from the credential settings page.
     * Rename the downloaded file to `client_secrets.json`.
     * copy the file where the `application.py` script is located in the repo directory on your machine.
 
