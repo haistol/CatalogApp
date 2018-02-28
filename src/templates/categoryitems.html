@@ -13,7 +13,9 @@
 			</section>
 			<section class = 'main'>
 				<h2>{{category.name}}</h2>
-				<a href="{{url_for('add_item_to_category',category_name = category.name)}}"> <h3> Create a New Item </h3> </a>
+				{% if user.gplus_id is defined %}
+					<a href="{{url_for('add_item_to_category',category_name = category.name)}}"> <h3> Create a New Item </h3> </a>
+				{% endif %}
 				<ul>
 					{% for item in items %}
 						<li>
