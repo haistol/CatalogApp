@@ -148,7 +148,9 @@ def delete_category_item(category_name, item_name):
 
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
-    """ Process the Google Oauth2 authorization sing in"""
+    """ Process the Google Oauth2 authorization sing in
+        This function is a modified version of the one used
+        in the Udacity google Oath2 lesson"""
     if request.args.get('state') != login_session['state']:
         response = make_response(json.dumps('Invalid state parameter'),
         401)
@@ -234,7 +236,9 @@ def gconnect():
 
 @app.route('/gdisconnect')
 def gdisconnect():
-    """ Process the Google Oauth2 authorization sing out"""
+    """ Process the Google Oauth2 authorization sing out
+        This function is a modified version of the one used
+        in the Udacity google Oath2 lesson"""
     access_token = login_session.get('credentials')
     if access_token is None:
         response = make_response(json.dumps('Current user not connected.'), 401)
