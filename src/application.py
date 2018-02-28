@@ -33,7 +33,7 @@ def get_categories():
         login_session['state'] = state
     categories = db_modules.getCategories()
     items=db_modules.getLatest10Items()
-    return render_template('categories.html', categories=categories,items=items,user=login_session)
+    return render_template('categories.html',client_id=CLIENT_ID, categories=categories,items=items,user=login_session)
 
 @app.route('/catalog/<string:category_name>', methods=['GET'])
 def get_items_by_category(category_name):
@@ -45,6 +45,7 @@ def get_items_by_category(category_name):
     items=db_modules.getCategoryItems(category.id)
     return render_template(
                 'categoryitems.html',
+                client_id=CLIENT_ID,
                 categories=categories,
                 category=category,
                 items=items,
@@ -62,6 +63,7 @@ def get_category_item(category_name, item_name):
     item=db_modules.getCategoryItem(category.id,item_name)
     return render_template(
                 'item.html',
+                client_id=CLIENT_ID,
                 category=category,
                 item=item,
                 user=login_session)
@@ -88,7 +90,7 @@ def add_item_to_category(category_name):
         db_modules.createCategoryItem(data)
         return redirect(url_for('get_items_by_category',category_name=category_name))
     else:
-        return render_template('newcategoryitem.html',category=category,user=login_session)
+        return render_template('newcategoryitem.html',client_id=CLIENT_ID,category=category,user=login_session)
     
 
 @app.route(
@@ -113,6 +115,7 @@ def edit_category_item(category_name, item_name):
     else:
         return render_template(
                     'editcategoryitem.html',
+                    client_id=CLIENT_ID,
                     category=category,
                     item=item,
                     user=login_session)
@@ -137,6 +140,7 @@ def delete_category_item(category_name, item_name):
     else:
         return render_template(
                     'deletecategoryitem.html',
+                    client_id=CLIENT_ID,
                     category=category,
                     item=item,
                     user=login_session)
