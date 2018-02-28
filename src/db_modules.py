@@ -80,6 +80,7 @@ class CategoryItem(Base):
 
 # User Table helper methods
 def getUserID(email):
+    """Return the User data that match with the email"""
     try:
         user = session.query(User).filter_by(email = email).one()
         return user.id
@@ -88,11 +89,13 @@ def getUserID(email):
 
 
 def getUserInfo(user_id):
+    """Return the User data that match with the user id"""
     user = session.query(User).filter_by(id = user_id).one()
     return user
 
 
 def createUser(login_session):
+    """Save the new user in the database and return the user id"""
     newUser = User(name = login_session['username'], email =
         login_session['email'], picture = login_session['picture'])
     createQuery(newUser)
@@ -102,54 +105,44 @@ def createUser(login_session):
 
 # Category Table Helper methods
 def getCategories():
+    """ Return a list with all categories from the database"""
     categories= session.query(Category).all()
     return categories
 
 
 def getCategoryByName(category_name):
+    """Return the category data that match with the name"""
     category= session.query(Category).filter_by(name = category_name).one()
     return category
 
 
 def createCategory(data):
+    """Save the new category in the database and return the
+     the sussess of the process as a bool """
     newCategory= Category(name= data['name'])
     return createQuery(newCategory)
 
-
-''' def editCategory(data):
-    try:
-        editCategory= getCategory(data['id'])
-        editCategory.name= data['name']
-        session.commit()
-        return True
-    except Exception:
-        session.rollback()
-        return False
- '''
-
-''' def deleteCategory(category):
-    items= getCategoryItems(category.id)
-    for item in items:
-        session.delete(item)
-    return deleteRowQuery(category)
- '''
-
 #Category_item Table Helper Methods
 def getCategoryItems(category_id):
+    """ Return a list with all items related to a category id in the database"""
     return session.query(CategoryItem).filter_by(category_id=category_id).all()
 
 
 def getCategoryItem(category_id,item_name):
+    """Return the item data that match with the category id and the item name"""
     try:
         return session.query(CategoryItem).filter_by(name=item_name).filter_by(category_id=category_id).one()
     except Exception:
         return None
 
 def getLatest10Items():
+    """ Return a list with the last 10 items saved in the database"""
     return session.query(CategoryItem).order_by(desc(CategoryItem.created_timestamp)).limit(10).all()
 
 
 def createCategoryItem(data):
+    """Save the new item in the database and return the
+     the sussess of the process as a bool """
     newCategoryItem= CategoryItem(
         name= data['name'],
         description= data['description'],
@@ -160,6 +153,8 @@ def createCategoryItem(data):
 
 
 def deleteCategoryItem(category_item):
+    """delete the  item from the database and return the
+     the sussess of the process as a bool """
     return deleteRowQuery(category_item)
 
 
